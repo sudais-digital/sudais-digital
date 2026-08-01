@@ -1,25 +1,71 @@
+import Link from "next/link";
+
 export default function Navbar() {
   return (
     <nav className="bg-blue-700 text-white shadow-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <h1 className="text-2xl font-bold">Sudais Digital</h1>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <Link href="/" className="text-2xl font-bold">
+          Sudais Digital
+        </Link>
 
-        <ul className="hidden md:flex gap-8 font-medium">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">Premium</a></li>
-          <li><a href="#">Referral</a></li>
-          <li><a href="#">Contact</a></li>
+        <ul className="hidden gap-8 font-medium md:flex">
+          <li>
+            <Link href="/" className="transition hover:text-blue-200">
+              Home
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/services"
+              className="transition hover:text-blue-200"
+            >
+              Services
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/premium"
+              className="transition hover:text-blue-200"
+            >
+              Premium
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href="/referrals"
+              className="transition hover:text-blue-200"
+            >
+              Referral
+            </Link>
+          </li>
+
+          <li>
+            <a
+              href="#contact"
+              className="transition hover:text-blue-200"
+            >
+              Contact
+            </a>
+          </li>
         </ul>
 
         <div className="flex gap-3">
-          <button className="px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-blue-700 transition">
+          <Link
+            href="/login"
+            className="rounded-lg border border-white px-4 py-2 transition hover:bg-white hover:text-blue-700"
+          >
             Login
-          </button>
+          </Link>
 
-          <button className="px-4 py-2 bg-white text-blue-700 rounded-lg font-semibold hover:bg-gray-100 transition">
+          <Link
+            href="/register"
+            className="rounded-lg bg-white px-4 py-2 font-semibold text-blue-700 transition hover:bg-gray-100"
+          >
             Register
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
