@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 
 import DashboardSidebar from "../components/DashboardSidebar";
 import ThemeToggle from "../components/ThemeToggle";
+import NotificationCenter from "../components/NotificationCenter";
 import { useCurrency } from "../components/CurrencyProvider";
 import { auth, db } from "../lib/firebase";
 import toast from "react-hot-toast";
@@ -356,6 +357,8 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+              <NotificationCenter user={user} />
+
               <ThemeToggle compact />
 
               <div className="hidden text-right sm:block">
