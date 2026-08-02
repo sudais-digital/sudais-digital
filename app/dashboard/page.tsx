@@ -142,6 +142,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
   const [referralEarnings, setReferralEarnings] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -326,21 +327,35 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-950">
-      <DashboardSidebar />
+      <DashboardSidebar
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
+      />
 
-      <main className="min-w-0 flex-1">
+      <main className="min-w-0 flex-1 overflow-x-hidden">
         <header className="border-b border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-          <div className="flex items-center justify-between gap-4 px-6 py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-blue-800 dark:text-blue-300">
-                Dashboard
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Welcome to Sudais Digital
-              </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                aria-label="Open dashboard menu"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gray-300 bg-white text-xl text-gray-800 shadow-sm transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 lg:hidden"
+              >
+                ☰
+              </button>
+
+              <div className="min-w-0">
+                <h1 className="truncate text-xl font-bold text-blue-800 dark:text-blue-300 sm:text-2xl">
+                  Dashboard
+                </h1>
+                <p className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block">
+                  Welcome to Sudais Digital
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <ThemeToggle compact />
 
               <div className="hidden text-right sm:block">
@@ -356,7 +371,7 @@ export default function DashboardPage() {
                 type="button"
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="rounded-lg bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
+                className="rounded-lg bg-red-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60 sm:px-5 sm:text-base"
               >
                 {loggingOut
                   ? "Logging out..."
@@ -366,10 +381,10 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <div className="p-4 md:p-8">
+        <div className="w-full max-w-full p-4 sm:p-5 md:p-8">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
                 Welcome back
               </h2>
 
@@ -385,7 +400,7 @@ export default function DashboardPage() {
                 onClick={() =>
                   router.push("/add-funds")
                 }
-                className="rounded-lg bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700"
+                className="w-full rounded-lg bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700 sm:w-auto"
               >
                 Add Funds
               </button>
@@ -395,7 +410,7 @@ export default function DashboardPage() {
                 onClick={() =>
                   router.push("/new-order")
                 }
-                className="rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white transition hover:bg-blue-800"
+                className="w-full rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white transition hover:bg-blue-800 sm:w-auto"
               >
                 New Order
               </button>
@@ -483,7 +498,7 @@ export default function DashboardPage() {
                     membershipAction.path
                   )
                 }
-                className="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white transition hover:bg-blue-800"
+                className="w-full rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white transition hover:bg-blue-800 lg:w-auto"
               >
                 {membershipAction.label}
               </button>
@@ -555,7 +570,7 @@ export default function DashboardPage() {
                 onClick={() =>
                   router.push("/add-funds")
                 }
-                className="rounded-lg bg-emerald-600 px-5 py-2.5 font-semibold text-white hover:bg-emerald-700"
+                className="w-full rounded-lg bg-emerald-600 px-5 py-2.5 font-semibold text-white hover:bg-emerald-700 sm:w-auto"
               >
                 Create Deposit Request
               </button>
@@ -569,7 +584,7 @@ export default function DashboardPage() {
           </section>
 
           <section className="mt-10 rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-900">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   Recent Orders
@@ -585,13 +600,13 @@ export default function DashboardPage() {
                 onClick={() =>
                   router.push("/new-order")
                 }
-                className="rounded-lg bg-blue-700 px-5 py-2.5 font-semibold text-white hover:bg-blue-800"
+                className="w-full rounded-lg bg-blue-700 px-5 py-2.5 font-semibold text-white hover:bg-blue-800 sm:w-auto"
               >
                 New Order
               </button>
             </div>
 
-            <div className="mt-8 rounded-xl border border-dashed border-gray-300 p-10 text-center dark:border-gray-700">
+            <div className="mt-8 rounded-xl border border-dashed border-gray-300 p-6 text-center dark:border-gray-700 sm:p-10">
               <p className="font-medium text-gray-700 dark:text-gray-300">
                 {totalOrders === 0
                   ? "No orders yet"
@@ -633,12 +648,12 @@ function DashboardCard({
   onAction,
 }: DashboardCardProps) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-900">
+    <div className="min-w-0 rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-900 sm:p-6">
       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
         {title}
       </p>
 
-      <h3 className="mt-3 break-words text-3xl font-bold text-gray-900 dark:text-white">
+      <h3 className="mt-3 break-words text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
         {value}
       </h3>
 
