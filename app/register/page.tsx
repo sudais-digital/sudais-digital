@@ -370,8 +370,7 @@ export default function RegisterPage() {
         country: "Pakistan",
         currency: "USD",
 
-        wallet: 0,
-        walletBalance: 0,
+        wallet: 0,      
         referralBalance: 0,
         referralEarnings: 0,
         pendingCommission: 0,
