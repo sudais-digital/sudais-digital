@@ -56,8 +56,13 @@ export default function DashboardSidebar({
     <aside className="flex h-full w-72 max-w-[85vw] flex-col overflow-y-auto bg-blue-900 px-4 py-6 text-white shadow-2xl dark:bg-slate-950">
       <div className="mb-8 flex items-start justify-between gap-4 px-3">
         <div className="min-w-0">
-          <h2 className="truncate text-2xl font-bold">Sudais Digital</h2>
-          <p className="mt-1 text-sm text-blue-200">User Dashboard</p>
+          <h2 className="truncate text-2xl font-bold">
+            Sudais Digital
+          </h2>
+
+          <p className="mt-1 text-sm text-blue-200">
+            User Dashboard
+          </p>
         </div>
 
         <button
@@ -87,8 +92,16 @@ export default function DashboardSidebar({
                   : "text-blue-100 hover:bg-blue-800"
               }`}
             >
-              <span aria-hidden="true" className="shrink-0">{item.icon}</span>
-              <span className="truncate">{t(item.key)}</span>
+              <span
+                aria-hidden="true"
+                className="shrink-0"
+              >
+                {item.icon}
+              </span>
+
+              <span className="truncate">
+                {t(item.key)}
+              </span>
             </Link>
           );
         })}
@@ -103,7 +116,18 @@ export default function DashboardSidebar({
           className="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-blue-100 transition hover:bg-blue-800"
         >
           <span aria-hidden="true">💬</span>
-          <span>WhatsApp</span>
+          <span>WhatsApp Support</span>
+        </a>
+
+        <a
+          href="https://whatsapp.com/channel/0029VbDZOr06RGJIQt9qsG0Q"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={closeMobileMenu}
+          className="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-blue-100 transition hover:bg-blue-800"
+        >
+          <span aria-hidden="true">📢</span>
+          <span>WhatsApp Channel</span>
         </a>
 
         <a
@@ -145,7 +169,9 @@ export default function DashboardSidebar({
 
         <div
           className={`relative h-full transition-transform duration-300 ease-out ${
-            mobileOpen ? "translate-x-0" : "-translate-x-full"
+            mobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
           }`}
         >
           {sidebarContent}
