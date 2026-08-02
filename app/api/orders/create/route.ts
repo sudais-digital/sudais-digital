@@ -12,35 +12,25 @@ type CreateOrderBody = {
   speed?: string;
 };
 
-type WalletField = "walletBalance" | "balance" | "wallet";
+type WalletField = "wallet";
 
-function getWalletInformation(userData: Record<string, unknown>): {
+function getWalletInformation(
+  userData: Record<string, unknown>
+): {
   field: WalletField;
   balance: number;
 } {
-  if (typeof userData.walletBalance === "number") {
-    return {
-      field: "walletBalance",
-      balance: userData.walletBalance,
-    };
-  }
+  const wallet = userData.wallet;
 
-  if (typeof userData.balance === "number") {
-    return {
-      field: "balance",
-      balance: userData.balance,
-    };
-  }
-
-  if (typeof userData.wallet === "number") {
+  if (typeof wallet === "number" && Number.isFinite(wallet)) {
     return {
       field: "wallet",
-      balance: userData.wallet,
+      balance: wallet,
     };
   }
 
   return {
-    field: "walletBalance",
+    field: "wallet",
     balance: 0,
   };
 }
@@ -377,7 +367,7 @@ export async function POST(request: NextRequest) {
 
     /*
      * 7. Firestore transaction:
-     * Wallet check, amount reserve aur internal order create
+     * USD wallet check, amount reserve aur internal order create
      */
     await adminDb.runTransaction(async (transaction) => {
       const userSnapshot = await transaction.get(userReference);
@@ -544,7 +534,7 @@ export async function POST(request: NextRequest) {
     if (errorMessage === "INSUFFICIENT_BALANCE") {
       return NextResponse.json(
         {
-          message: "Aapke wallet mein balance kam hai.",
+          message: "Aapke wallet mein balance kam hai. Pehle funds add karein.",
           code: "INSUFFICIENT_BALANCE",
         },
         { status: 400 }
