@@ -279,28 +279,28 @@ export default function NotificationCenter({
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-xl transition hover:bg-gray-50"
+        className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-xl text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
         aria-label={`Open notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         title={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
       >
         🔔
 
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 animate-pulse items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white ring-2 ring-white">
+          <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 animate-pulse items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white ring-2 ring-white dark:ring-gray-900">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-14 z-50 w-[340px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:w-[400px]">
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="fixed inset-x-3 top-24 z-[120] max-h-[calc(100vh-7rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900 sm:absolute sm:inset-x-auto sm:right-0 sm:top-14 sm:w-[400px] sm:max-w-[calc(100vw-2rem)]">
+          <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-4 py-4 dark:border-gray-800 sm:px-5">
             <div>
-              <h3 className="font-bold text-gray-900">
+              <h3 className="font-bold text-gray-900 dark:text-white">
                 Notifications
               </h3>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {unreadCount} unread notification
                 {unreadCount === 1 ? "" : "s"}
               </p>
@@ -312,7 +312,7 @@ export default function NotificationCenter({
               disabled={
                 unreadCount === 0 || markingAllRead
               }
-              className="text-xs font-semibold text-blue-700 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
+              className="shrink-0 text-xs font-semibold text-blue-700 hover:underline disabled:cursor-not-allowed disabled:text-gray-400 dark:text-blue-300"
             >
               {markingAllRead
                 ? "Updating..."
@@ -320,20 +320,20 @@ export default function NotificationCenter({
             </button>
           </div>
 
-          <div className="max-h-[420px] overflow-y-auto">
+          <div className="max-h-[calc(100vh-13rem)] overflow-y-auto sm:max-h-[420px]">
             {loading ? (
-              <div className="p-8 text-center text-sm text-gray-500">
+              <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
                 Notifications loading...
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-10 text-center">
                 <div className="text-4xl">🔔</div>
 
-                <p className="mt-3 font-semibold text-gray-800">
+                <p className="mt-3 font-semibold text-gray-800 dark:text-gray-100">
                   No notifications
                 </p>
 
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   New updates yahan show hongi.
                 </p>
               </div>
@@ -347,13 +347,13 @@ export default function NotificationCenter({
                       notification
                     )
                   }
-                  className={`flex w-full gap-3 border-b border-gray-100 px-5 py-4 text-left transition last:border-b-0 hover:bg-gray-50 ${
+                  className={`flex w-full gap-3 border-b border-gray-100 px-4 py-4 text-left transition last:border-b-0 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 sm:px-5 ${
                     notification.read
-                      ? "bg-white"
-                      : "bg-blue-50"
+                      ? "bg-white dark:bg-gray-900"
+                      : "bg-blue-50 dark:bg-blue-950/40"
                   }`}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm dark:bg-gray-800">
                     {getNotificationIcon(
                       notification.type
                     )}
@@ -361,7 +361,7 @@ export default function NotificationCenter({
 
                   <span className="min-w-0 flex-1">
                     <span className="flex items-start justify-between gap-3">
-                      <span className="font-semibold text-gray-900">
+                      <span className="break-words font-semibold text-gray-900 dark:text-white">
                         {notification.title}
                       </span>
 
@@ -370,11 +370,11 @@ export default function NotificationCenter({
                       )}
                     </span>
 
-                    <span className="mt-1 block text-sm leading-5 text-gray-600">
+                    <span className="mt-1 block break-words text-sm leading-5 text-gray-600 dark:text-gray-300">
                       {notification.message}
                     </span>
 
-                    <span className="mt-2 block text-xs text-gray-400">
+                    <span className="mt-2 block text-xs text-gray-400 dark:text-gray-500">
                       {formatNotificationTime(
                         notification.createdAt
                       )}
