@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { adminAuth, adminDb } from "../../../lib/firebaseAdmin";
-import { createProviderOrder } from "../../../lib/providers/onespin";
+import {
+  createProviderOrder,
+  getProviderServiceRate,
+} from "../../../lib/providers/onespin";
 
 type CreateOrderBody = {
   serviceId?: string;
@@ -38,6 +41,12 @@ function getWalletInformation(
 function roundMoney(value: number): number {
   return Number(value.toFixed(4));
 }
+
+function roundRate(value: number): number {
+  return Number(value.toFixed(6));
+}
+
+const MINIMUM_PROFIT_PERCENT = 10;
 
 function getSafeErrorMessage(error: unknown): string {
   if (!(error instanceof Error)) {
@@ -330,29 +339,119 @@ export async function POST(request: NextRequest) {
     }
 
     /*
-     * 5. Server-side price calculate
+     * 5. Provider se latest service rate check
      *
-     * User frontend ka charge trust nahi kiya ja raha.
+     * Firestore ka purana rate trust nahi kiya ja raha.
+     * Provider ka configured markup use hoga, lekin minimum 10% rahega.
      */
-    const charge = roundMoney(
-      (sellingRatePer1000 * quantity) / 1000
+    const configuredProfitPercent = Number(
+      provider.defaultProfitPercent ?? MINIMUM_PROFIT_PERCENT
     );
 
-    const providerCost = roundMoney(
-      (providerRatePer1000 * quantity) / 1000
-    );
+    const appliedProfitPercent =
+      Number.isFinite(configuredProfitPercent) &&
+      configuredProfitPercent >= MINIMUM_PROFIT_PERCENT
+        ? configuredProfitPercent
+        : MINIMUM_PROFIT_PERCENT;
 
-    const profit = roundMoney(charge - providerCost);
+    let latestProviderRatePer1000: number;
 
-    if (!Number.isFinite(charge) || charge < 0) {
+    try {
+      const latestProviderService =
+        await getProviderServiceRate({
+          apiUrl,
+          apiKey,
+          service: providerServiceId,
+        });
+
+      latestProviderRatePer1000 =
+        latestProviderService.ratePer1000;
+    } catch (rateError) {
+      console.error(
+        "Latest provider service rate check error:",
+        rateError
+      );
+
       return NextResponse.json(
         {
-          message: "Order charge calculate nahi ho saka.",
-          code: "INVALID_ORDER_CHARGE",
+          message:
+            "Provider ka latest rate check nahi ho saka. Thori dair baad dobara try karein.",
+          code: "PROVIDER_RATE_CHECK_FAILED",
+        },
+        { status: 503 }
+      );
+    }
+
+    const latestSellingRatePer1000 = roundRate(
+      latestProviderRatePer1000 *
+        (1 + appliedProfitPercent / 100)
+    );
+
+    const latestCharge = roundMoney(
+      (latestSellingRatePer1000 * quantity) / 1000
+    );
+
+    const latestProviderCost = roundMoney(
+      (latestProviderRatePer1000 * quantity) / 1000
+    );
+
+    const latestProfit = roundMoney(
+      latestCharge - latestProviderCost
+    );
+
+    if (
+      !Number.isFinite(latestCharge) ||
+      latestCharge < 0 ||
+      !Number.isFinite(latestProviderCost) ||
+      latestProviderCost < 0
+    ) {
+      return NextResponse.json(
+        {
+          message: "Latest order price calculate nahi ho saka.",
+          code: "INVALID_LATEST_ORDER_PRICE",
         },
         { status: 500 }
       );
     }
+
+    const savedRateChanged =
+      Math.abs(
+        latestSellingRatePer1000 - sellingRatePer1000
+      ) > 0.0000005 ||
+      Math.abs(
+        latestProviderRatePer1000 - providerRatePer1000
+      ) > 0.0000005;
+
+    if (savedRateChanged) {
+      await serviceReference.update({
+        providerRatePer1000: roundRate(
+          latestProviderRatePer1000
+        ),
+        ratePer1000: latestSellingRatePer1000,
+        profitPercent: appliedProfitPercent,
+        latestRateCheckedAt:
+          FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      return NextResponse.json(
+        {
+          message:
+            "Service ki price update ho gayi hai. Page refresh karke naya price check karein, phir order dobara submit karein.",
+          code: "SERVICE_PRICE_UPDATED",
+          oldRatePer1000: sellingRatePer1000,
+          newRatePer1000: latestSellingRatePer1000,
+          newCharge: latestCharge,
+          currency,
+          profitPercent: appliedProfitPercent,
+        },
+        { status: 409 }
+      );
+    }
+
+    const charge = latestCharge;
+    const providerCost = latestProviderCost;
+    const profit = latestProfit;
 
     /*
      * 6. Internal order reference pehle create
@@ -416,8 +515,11 @@ export async function POST(request: NextRequest) {
         link,
         quantity,
 
-        ratePer1000: sellingRatePer1000,
-        providerRatePer1000,
+        ratePer1000: latestSellingRatePer1000,
+        providerRatePer1000: roundRate(
+          latestProviderRatePer1000
+        ),
+        profitPercent: appliedProfitPercent,
         charge,
         providerCost,
         profit,
