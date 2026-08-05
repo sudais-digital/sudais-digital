@@ -120,7 +120,7 @@ export default function DashboardSidebar({
         </a>
 
         <a
-          href="https://whatsapp.com/channel/0029VbDZOr06RGJIQt9qsG0Q"
+          href="https://whatsapp.com/channel/0029Vb8ZtPG0wak2BGN2BY0B"
           target="_blank"
           rel="noopener noreferrer"
           onClick={closeMobileMenu}
